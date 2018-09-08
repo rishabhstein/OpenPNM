@@ -10,6 +10,14 @@
 .. image:: https://readthedocs.org/projects/openpnm/badge/?version=latest
    :target: http://openpnm.readthedocs.org/
 
+.. warning:: Old Version
+
+    This is OpenPNM version 1.7.0.  We have since moved on to version 2+.  This
+    branch is only here to assist users of the old version in case they need to
+    browse the source code.  Specically, the tests folder may be useful for
+    those looking to see how some more complex feastures work, like adding
+    source terms.
+
 ###############################################################################
 Overview of OpenPNM
 ###############################################################################
