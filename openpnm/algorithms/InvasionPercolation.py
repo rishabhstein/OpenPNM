@@ -208,8 +208,11 @@ class InvasionPercolation(GenericAlgorithm):
 
     def results(self, Snwp=None):
         r"""
-        Returns the phase configuration at the specified non-wetting phase
-        (invading phase) saturation.
+        Returns the phase configuration at the specified invading phase
+        saturation
+
+        If ``Snwp`` is not given, then the invasion sequence of all pores
+        and throats is return.
 
         Parameters
         ----------
@@ -219,13 +222,23 @@ class InvasionPercolation(GenericAlgorithm):
 
         Returns
         -------
-        Two dictionary containing arrays that describe the pore and throat
-        distribution at the given saturation.  Specifically, these are:
+        If ``Snwp`` is given, then a dictionary containing two arrays that
+        describe the pore and throat distribution at the given saturation.
+        Specifically, these are:
 
         **'pore.occupancy'** : 1 indicates the pores is invaded and 0
         otherwise.
 
         **'throat.occupancy'** : Same as described above but for throats.
+
+        If ``Snwp`` is not given, then a dictionary with arrays containing
+        the invasion sequence is given.  Specifically:
+
+        **'pore.invasion_sequence'** : Indicates at which step in the invasion
+        process each pore was filled.
+
+        **'throat.invasion_sequence'** : Indicates at which step in the invasion
+        process each throat was filled.
 
         """
         if Snwp is None:
@@ -242,7 +255,7 @@ class InvasionPercolation(GenericAlgorithm):
             # Fetch the order of filling
             Np = self['pore.invasion_sequence']
             Nt = self['throat.invasion_sequence']
-            # Create Nt-long mask of which pores were filled when throat was filled
+            # Create Nt-long mask of pores that filled when throat was filled
             Pinv = (Np[P12].T == Nt).T
             # If a pore and throat filled together, find combined volume
             Vinv = sp.vstack(((Pinv*Vp[P12]).T, Vt)).T
@@ -255,7 +268,7 @@ class InvasionPercolation(GenericAlgorithm):
             # Find throat invasion step where Snwp was reached
             try:
                 N = sp.where(S < Snwp)[0][-1]
-            except:
+            except IndexError:
                 N = -np.inf
             data = {'pore.occupancy': Np <= N, 'throat.occupancy': Nt <= N}
         return data
@@ -263,10 +276,29 @@ class InvasionPercolation(GenericAlgorithm):
     def apply_trapping(self, outlets):
         """
         Apply trapping based on algorithm described by Y. Masson [1].
+
         It is applied as a post-process and runs the percolation algorithm in
-        reverse assessing the occupancy of pore neighbors. Consider the
-        following scenario when running standard IP without trapping,
-        3 situations can happen after each invasion step:
+        reverse assessing the occupancy of pore neighbors.
+
+        Parameters
+        ----------
+        outlets : list or array_like
+            Pore indices for defending fluid to escape through
+
+        Returns
+        -------
+        Does not return anything, but does create several new arrays on the
+        Algorithm.
+
+        1. Creates a throat array called 'pore.clusters' in the Algorithm
+        dictionary. Any positive number is a trapped cluster
+
+        2. Creates 2 boolean arrays Np and Nt long called '<element>.trapped'
+
+        Notes
+        -----
+        Consider the following scenario when running standard IP without
+        trapping, 3 situations can happen after each invasion step:
 
             * The number of defending clusters stays the same and clusters can
             shrink
@@ -295,21 +327,9 @@ class InvasionPercolation(GenericAlgorithm):
         identified at the point of breakthrough or grow from nothing if the
         full invasion sequence is run, they are assigned numbers from 0 up.
 
-        Ref:
         [1] Masson, Y., 2016. A fast two-step algorithm for invasion
         percolation with trapping. Computers & Geosciences, 90, pp.41-48
 
-        Parameters
-        ----------
-        outlets : list or array of pore indices for defending fluid to escape
-        through
-
-        Returns
-        -------
-        Creates a throat array called 'pore.clusters' in the Algorithm
-        dictionary. Any positive number is a trapped cluster
-
-        Also creates 2 boolean arrays Np and Nt long called '<element>.trapped'
         """
         # First see if network is fully invaded
         net = self.project.network
