@@ -1,6 +1,7 @@
 import heapq as hq
 import scipy as sp
 import numpy as np
+from porespy.tools import make_contiguous
 from openpnm.algorithms import GenericAlgorithm
 from openpnm.utils import logging
 logger = logging.getLogger(__name__)
@@ -414,7 +415,13 @@ class InvasionPercolation(GenericAlgorithm):
                     str(np.sum(np.unique(clusters) >= 0)))
         self['pore.trapped'] = self['pore.clusters'] > -1
         trapped_ts = net.find_neighbor_throats(self['pore.trapped'])
-        self['throat.trapped'] = np.zeros([net.Nt], dtype=bool)
+        self['throat.trapped'] = False
         self['throat.trapped'][trapped_ts] = True
-        self['pore.invasion_sequence'][self['pore.trapped']] = -1
-        self['throat.invasion_sequence'][self['throat.trapped']] = -1
+        self['pore.invasion_sequence'][self['pore.trapped']] = 0
+        self['throat.invasion_sequence'][self['throat.trapped']] = 0
+        p = make_contiguous(self['pore.invasion_sequence'])
+        self['pore.invasion_sequence'] = p
+        t = make_contiguous(self['throat.invasion_sequence'])
+        self['throat.invasion_sequence'] = t
+        self['pore.invasion_sequence'][self['pore.trapped']] = sp.iinfo(p.dtype).max
+        self['throat.invasion_sequence'][self['throat.trapped']] = sp.iinfo(t.dtype).max
