@@ -2,6 +2,7 @@ from openpnm.algorithms import GenericAlgorithm, StokesFlow
 from openpnm.utils import logging
 from openpnm import models
 import numpy as np
+import matplotlib.pyplot as plt
 logger = logging.getLogger(__name__)
 
 
@@ -17,7 +18,9 @@ default_settings = {'sat': [],
                     'flow_inlet': [],
                     'flow_outlet': [],
                     'pore_volume': [],
-                    'throat_volume': []}
+                    'throat_volume': [],
+                    'results':{'sat':[], 'krw':[], 'krnw':[]}
+                    }
 
 
 class DirectionalRelativePermeability(GenericAlgorithm):
@@ -79,7 +82,7 @@ class DirectionalRelativePermeability(GenericAlgorithm):
     
     def rel_perm_calc(self,B_pores,in_outlet_pores):
         network=self.project.network
-        self.settings._regenerate_models()
+        self._regenerate_models()
         St_mp_wp = StokesFlow(network=network, phase=self.settings['wp'])
         St_mp_wp.setup(conductance='throat.conduit_hydraulic_conductance')
         St_mp_wp.set_value_BC(pores=B_pores[0], values=1)
@@ -138,6 +141,18 @@ class DirectionalRelativePermeability(GenericAlgorithm):
             Krnwp=Kenwp/self.settings['perm_nwp']
             self.settings['relperm_wp'].append(Krwp)
             self.settings['relperm_nwp'].append(Krnwp)
-        print('sat is',self.settings['sat'])
-        print('krw is',self.settings['relperm_wp'])
-        print('krnw is',self.settings['relperm_nwp'])
+        
+    def get_Kr_data(self):
+        self.settings['results']['sat']=self.settings['sat']
+        self.settings['results']['krw']=self.settings['relperm_wp']
+        self.settings['results']['krnw']=self.settings['relperm_nwp']
+        return self.settings['results']
+        
+    def plot_Kr_curve(self):
+        f = plt.figure()
+        sp = f.add_subplot(111)
+        sp.plot(self.settings['sat'], self.settings['relperm_wp'], 'o-')
+        sp.plot(self.settings['sat'], self.settings['relperm_nwp'], '*-')
+        return f
+        
+        

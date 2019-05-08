@@ -50,4 +50,6 @@ rp.setup(invading_phase=oil, defending_phase=water,
          throat_invasion_sequence=ip['throat.invasion_sequence'])
 rp.set_inlets(pores=Finlets_init['y'])
 rp.set_outlets(pores=Foutlets_init['y'])
-rp.run(Snw_num=10, IP_pores=Finlets['y'])
+rp.run(Snw_num=50, IP_pores=Finlets['y'])
+results=rp.get_Kr_data()
+rp.plot_Kr_curve()
