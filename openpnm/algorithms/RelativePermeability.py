@@ -1,6 +1,6 @@
 from openpnm.algorithms import GenericAlgorithm, InvasionPercolation
 from openpnm.algorithms import DirectionalRelativePermeability
-from openpnm.algorithms.DirectionalRelativePermeability import ClassName
+# from openpnm.algorithms.DirectionalRelativePermeability import ClassName
 from openpnm.utils import logging
 from openpnm.core import Base
 # from openpnm import models
@@ -28,7 +28,7 @@ default_settings = {
                     'BP_1': dict(),
                     'BP_2': dict()}
 
-class RelativePermeability(ClassName):
+class RelativePermeability(DirectionalRelativePermeability):
     r"""
     A subclass of Generic Algorithm to calculate relative permeabilities of
     fluids in a drainage process. The main roles of this subclass are to
