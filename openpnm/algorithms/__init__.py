@@ -28,5 +28,5 @@ from .MixedInvasionPercolation import MixedInvasionPercolation
 from .Porosimetry import Porosimetry
 from .NernstPlanck import NernstPlanck
 from .ChargeConservationNernstPlanck import ChargeConservationNernstPlanck
-from .RelativePermeability import RelativePermeability
+from .Auto_RelPerm import Auto_RelPerm
 from .DirectionalRelativePermeability import DirectionalRelativePermeability

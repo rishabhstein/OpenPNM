@@ -28,7 +28,7 @@ default_settings = {
                     'BP_1': dict(),
                     'BP_2': dict()}
 
-class RelativePermeability(DirectionalRelativePermeability):
+class Auto_RelPerm(DirectionalRelativePermeability):
     r"""
     A subclass of Generic Algorithm to calculate relative permeabilities of
     fluids in a drainage process. The main roles of this subclass are to
