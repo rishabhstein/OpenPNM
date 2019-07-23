@@ -98,7 +98,7 @@ def bulk_diffusion(target,
                 pore_volume='pore.volume',
                 pore_diameter='pore.diameter',
                 throat_area='throat.area',
-                throat_diffusivity='throat.diffusivity'):
+                pore_diffusivity='pore.diffusivity'):
     r"""
     Calculate the diffusive conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ). See the notes section.
@@ -142,4 +142,4 @@ def bulk_diffusion(target,
                          pore_volume=pore_volume,
                          pore_diameter=pore_diameter,
                          throat_area=throat_area,
-                         throat_diffusivity=throat_diffusivity)
+                         pore_diffusivity=pore_diffusivity)

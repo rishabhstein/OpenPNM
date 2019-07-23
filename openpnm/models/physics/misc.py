@@ -133,7 +133,7 @@ def conical_model(target,
                   pore_volume,
                   pore_diameter,
                   throat_area,
-                  throat_diffusivity):
+                  pore_diffusivity):
     r"""
     Calculate the diffusive conductance of conduits in network, where a
     conduit is ( 1/2 pore - full throat - 1/2 pore ) based on the areas
@@ -169,7 +169,8 @@ def conical_model(target,
     tdia = _sp.sqrt(tarea)
 
     # Interpolate pore phase property values to throats
-    DABt = phase[throat_diffusivity]
+    DABp1 = phase[pore_diffusivity][cn[:, 0]]
+    DABp2 = phase[pore_diffusivity][cn[:, 1]]
 
     # get c-to-c length from pore center to throat center
     t_coords = network['throat.centroid']
@@ -210,12 +211,14 @@ def conical_model(target,
     new_pdia2[ind4 == True] = pdia[cn[:, 1]][ind4 == True]
 
     # Find g for half of pore 1
-    gp1 = DABt * (new_pdia1 * tdia) / (plen1)
+    gp1 = DABp1 * (new_pdia1 * tdia) / (plen1)
+    # gp1 = DABp1 * (phv[cn[:, 0]]) / (plen1 ** 2)
     gp1[_sp.isnan(gp1)] = _sp.inf
     gp1[~(gp1 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
 
     # Find g for half of pore 2
-    gp2 = DABt * (new_pdia2 * tdia) / (plen2)
+    gp2 = DABp2 * (new_pdia2 * tdia) / (plen2)
+    # gp2 = DABp2 * (phv[cn[:, 1]]) / (plen2 ** 2)
     gp2[_sp.isnan(gp2)] = _sp.inf
     gp2[~(gp2 > 0)] = _sp.inf  # Set 0 conductance pores (boundaries) to inf
 
@@ -225,3 +228,4 @@ def conical_model(target,
         value = value.real
         # print(value)
     return value
+
