@@ -248,8 +248,8 @@ class ReactiveTransport(GenericTransport):
             S1_old = phase[item+'.'+'S1'][Ps].copy()
             S2_old = phase[item+'.'+'S2'][Ps].copy()
             self._update_physics()
-            S1 = phase[item+'.'+'S1'][Ps]
-            S2 = phase[item+'.'+'S2'][Ps]
+            S1 = phase[item+'.'+'S1'][Ps].copy()
+            S2 = phase[item+'.'+'S2'][Ps].copy()
             S1 = relax*S1 + (1-relax)*S1_old
             S2 = relax*S2 + (1-relax)*S2_old
             phase[item+'.'+'S1'][Ps] = S1
