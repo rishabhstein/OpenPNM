@@ -43,7 +43,7 @@ class PETScSparseLinearSolver(Base):
                    'maxiter': 1000}
         self.settings.update(def_set)
         self.settings.update(settings)
-        self.A = A
+        self.A = sp.sparse.csr_matrix(A)
         self.b = b
 
     def _initialize_A(self):
